@@ -1,0 +1,6 @@
+flask
+gunicorn
+torch
+Pillow
+pandas
+ultralytics
