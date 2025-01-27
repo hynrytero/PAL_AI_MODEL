@@ -4,3 +4,4 @@ torch
 Pillow
 pandas
 ultralytics
+opencv-python
