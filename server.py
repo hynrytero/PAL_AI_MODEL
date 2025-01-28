@@ -6,7 +6,6 @@ import os
 
 app = Flask(__name__)
 
-# Load model from model folder
 MODEL_PATH = os.path.join('model', 'best.pt')
 model = YOLO(MODEL_PATH)
 
@@ -14,13 +13,10 @@ model = YOLO(MODEL_PATH)
 def home():
     return jsonify({
         'status': 'active',
-        'model': 'YOLOv8 Object Detection',
+        'model': 'PAL-AI YOLOv8 Rice Leaf Disease Detection Model',
         'endpoints': {
             '/': 'GET - This help message',
-            '/predict': 'POST - Submit an image for object detection'
-        },
-        'usage': {
-            'predict': 'Send a POST request with an image file in the "file" field'
+            '/predict': 'POST - Submit an image for rice leaf disease detection'
         }
     })
 
