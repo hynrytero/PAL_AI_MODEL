@@ -11,6 +11,14 @@ CORS(app)
 MODEL_PATH = os.path.join('model', 'best.pt')
 model = YOLO(MODEL_PATH)
 
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify({
+        'service': 'Rice Leaf Disease Detection API',
+        'endpoints': ['/predict'],
+        'status': 'active'
+    })
+
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -41,11 +49,11 @@ def predict():
                     'xmax': float(box.xyxy[0][2]),
                     'ymax': float(box.xyxy[0][3]),
                     'confidence': float(box.conf),
-                    'class': result.names[int(box.cls)]
+                    'class': result.names[int(box.cls)],
+                    'class_number': int(box.cls)
                 }
                 predictions.append(pred)
         
-        print(f"Predictions: {predictions}")  # Single console output for predictions
         return jsonify({
             'predictions': predictions
         })
