@@ -70,7 +70,7 @@ def predict():
                 predictions.append(pred)
         
         if not predictions:
-            predictions = [{'class_number': 0}]
+            predictions = [{'class_number': 3}]
 
         return jsonify({
             'predictions': predictions
@@ -78,6 +78,6 @@ def predict():
 
     except Exception as e:
         return jsonify({'error': str(e), 'predictions': [{'class_number': 0}]}), 500
-        
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
