@@ -15,9 +15,24 @@ model = YOLO(MODEL_PATH)
 def home():
     return jsonify({
         'service': 'Rice Leaf Disease Detection API',
-        'endpoints': ['/predict'],
+        'endpoints': ['/predict', '/classes'],
         'status': 'active'
     })
+
+@app.route('/classes', methods=['GET'])
+def get_classes():
+    try:
+        class_names = model.names
+        class_mapping = {
+            class_id: class_name 
+            for class_id, class_name in class_names.items()
+        }
+        
+        return jsonify({
+            'classes': class_mapping
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/predict', methods=['POST'])
 def predict():
