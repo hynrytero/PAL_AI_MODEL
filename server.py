@@ -70,7 +70,7 @@ def predict():
                 predictions.append(pred)
         
         if not predictions:
-            predictions = [{'class_number': 3}]
+            predictions = [{'class_number': 3, 'confidence': 0.0}]
 
         return jsonify({
             'predictions': predictions
