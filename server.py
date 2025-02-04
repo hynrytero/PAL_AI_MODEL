@@ -38,16 +38,16 @@ def get_classes():
 def predict():
     try:
         if 'file' not in request.files:
-            return jsonify({'error': 'No file provided'}), 400
-            
+            return jsonify({'error': 'No file provided', 'predictions': [{'class_number': 0}]}), 400
+        
         file = request.files['file']
         
         if not file or not file.filename:
-            return jsonify({'error': 'Invalid file'}), 400
+            return jsonify({'error': 'Invalid file', 'predictions': [{'class_number': 0}]}), 400
 
         allowed_extensions = {'png', 'jpg', 'jpeg'}
         if not file.filename.lower().endswith(tuple(allowed_extensions)):
-            return jsonify({'error': 'Invalid file type'}), 400
+            return jsonify({'error': 'Invalid file type', 'predictions': [{'class_number': 0}]}), 400
 
         img_bytes = file.read()
         img = Image.open(io.BytesIO(img_bytes))
@@ -69,12 +69,15 @@ def predict():
                 }
                 predictions.append(pred)
         
+        if not predictions:
+            predictions = [{'class_number': 0}]
+
         return jsonify({
             'predictions': predictions
         })
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
+        return jsonify({'error': str(e), 'predictions': [{'class_number': 0}]}), 500
+        
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
