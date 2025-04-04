@@ -8,8 +8,12 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-MODEL_PATH = os.path.join('model', 'best.pt')
-model = YOLO(MODEL_PATH)
+# Load both models
+RICE_VERIFICATION_MODEL_PATH = os.path.join('model', 'if_Rice.pt')
+DISEASE_MODEL_PATH = os.path.join('model', 'best.pt')
+
+rice_model = YOLO(RICE_VERIFICATION_MODEL_PATH)
+disease_model = YOLO(DISEASE_MODEL_PATH)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -22,7 +26,7 @@ def home():
 @app.route('/classes', methods=['GET'])
 def get_classes():
     try:
-        class_names = model.names
+        class_names = disease_model.names
         class_mapping = {
             class_id: class_name 
             for class_id, class_name in class_names.items()
@@ -52,10 +56,31 @@ def predict():
         img_bytes = file.read()
         img = Image.open(io.BytesIO(img_bytes))
         
-        results = model(img)
+        # First check if it's a rice leaf
+        rice_results = rice_model(img)
+        is_rice_leaf = False
+        
+        for result in rice_results:
+            boxes = result.boxes
+            for box in boxes:
+                if float(box.conf) > 0.3:  # Confidence threshold
+                    is_rice_leaf = True
+                    break
+            if is_rice_leaf:
+                break
+        
+        if not is_rice_leaf:
+            return jsonify({
+                'error': 'Not a rice leaf',
+                'predictions': [{'class_number': 0}],
+                'is_rice_leaf': False
+            }), 400
+        
+        # If it's a rice leaf, proceed with disease classification
+        disease_results = disease_model(img)
         
         predictions = []
-        for result in results:
+        for result in disease_results:
             boxes = result.boxes
             for box in boxes:
                 pred = {
@@ -73,7 +98,8 @@ def predict():
             predictions = [{'class_number': 3, 'confidence': 0.0}]
 
         return jsonify({
-            'predictions': predictions
+            'predictions': predictions,
+            'is_rice_leaf': True
         })
 
     except Exception as e:
