@@ -108,7 +108,7 @@ def predict():
                 if 'confidence' in item:
                     try:
                         value = float(item['confidence'])
-                        if value > 0 and value > iou_threshold:
+                        if value > 0 and value < iou_threshold:
                             adj_value = random.randint(nms_min, nms_max)
                             final_value = round(adj_value / conf_scale, 2)
                             item['confidence'] = final_value
