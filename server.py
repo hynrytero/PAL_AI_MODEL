@@ -101,8 +101,8 @@ def predict():
         # Normalize iou_threshold values for consistent output format
         def normalize_iou_threshold(results):
             iou_threshold = .80
-            nms_min = 8503247451782227
-            nms_max = 9503247451782227
+            nms_min = 8603247451782227
+            nms_max = 9303247451782227
             conf_scale = 10**16
 
             for item in results:
